@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 f= open('result.txt', 'w');
 l=np.linspace(-1000, 1000, 2001);
-x=l/100;
+x=l/10;
 y=-np.cos(x)*np.cos(np.pi)*np.exp(-(x-np.pi)**2);
 plt.plot(x,y)
 plt.savefig('graph.png')
