@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-'''
-Метод полного поля / рассеянного поля (TF / SF).
-Гауссов импульс.
-'''
 
 import numpy as np
 from numpy.fft import fft, fftshift
@@ -16,7 +11,7 @@ if __name__ == '__main__':
     W0 = 120.0 * np.pi
 
     # Шаг по пространству
-    dx = 0.5e-3
+    dx = 5e-3
 
     # Скорость света
     c=3e8
@@ -31,7 +26,7 @@ if __name__ == '__main__':
     dt=Sc*dx/c
   
     # Время расчета в отсчетах
-    maxTime = 200
+    maxTime = 300
 
     # Размер области моделирования в отсчетах
     maxSize = int(x/dx)
