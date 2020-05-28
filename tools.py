@@ -44,7 +44,7 @@ class AnimateFieldDisplay:
     def __init__(self,
                  maxXSize: int,
                  minYSize: float, maxYSize: float,
-                 yLabel: str, dx: float):
+                 yLabel: str, dt: float, dx: float):
         '''
         maxXSize - размер области моделирования в отсчетах.
         minYSize, maxYSize - интервал отображения графика по оси Y.
@@ -53,19 +53,19 @@ class AnimateFieldDisplay:
         self.maxXSize = maxXSize
         self.minYSize = minYSize
         self.maxYSize = maxYSize
-        self.dx=dx
+        self.dx=dt
         self._xList = None
         self._line = None
-        self._xlabel = 'x, отсчет'
+        self._xlabel = 'x, м'
         self._ylabel = yLabel
         self._probeStyle = 'xr'
         self._sourceStyle = 'ok'
 
-    def activate(self):
+    def activate(self, dx: float):
         '''
         Инициализировать окно с анимацией
         '''
-        self._xList = numpy.arange(self.maxXSize)
+        self._xList = numpy.arange(self.maxXSize)*dx
 
         # Включить интерактивный режим для анимации
         pylab.ion()
@@ -74,7 +74,9 @@ class AnimateFieldDisplay:
         self._fig, self._ax = pylab.subplots()
 
         # Установка отображаемых интервалов по осям
-        self._ax.set_xlim(0, self.maxXSize)
+       
+        self._ax.set_xlim(0, self.maxXSize*dx)
+        
         self._ax.set_ylim(self.minYSize, self.maxYSize)
 
         # Установка меток по осям
@@ -87,7 +89,7 @@ class AnimateFieldDisplay:
         # Отобразить поле в начальный момент времени
         self._line, = self._ax.plot(self._xList, numpy.zeros(self.maxXSize))
 
-    def drawProbes(self, probesPos: List[int]):
+    def drawProbes(self, probesPos: List[int],dx:float):
         '''
         Нарисовать датчики.
 
@@ -95,24 +97,25 @@ class AnimateFieldDisplay:
             сигналов (в отсчетах).
         '''
         # Отобразить положение датчиков
-        self._ax.plot(probesPos, [0] * len(probesPos), self._probeStyle)
+        for i in range(len(probesPos)):
+            self._ax.plot((probesPos[(i-1)])*dx,0, self._probeStyle)
 
-    def drawSources(self, sourcesPos: List[int]):
+    def drawSources(self, sourcesPos: List[int], dx: float):
         '''
         Нарисовать источники.
 
         sourcesPos - список координат источников (в отсчетах).
         '''
         # Отобразить положение источников
-        self._ax.plot(sourcesPos, [0] * len(sourcesPos), self._sourceStyle)
+        self._ax.plot(sourcesPos[0]*dx, [0] * len(sourcesPos), self._sourceStyle)
 
-    def drawBoundary(self, position: int):
+    def drawBoundary(self, position: int, dx:float):
         '''
         Нарисовать границу в области моделирования.
 
         position - координата X границы (в отсчетах).
         '''
-        self._ax.plot([position, position],
+        self._ax.plot([position*dx, position*dx],
                       [self.minYSize, self.maxYSize],
                       '--k')
 
@@ -132,7 +135,7 @@ class AnimateFieldDisplay:
         self._fig.canvas.flush_events()
 
 
-def showProbeSignals(probes: List[Probe], minYSize: float, maxYSize: float, dt:float):
+def showProbeSignals(probes: List[Probe], minYSize: float, maxYSize: float, dt: float):
     '''
     Показать графики сигналов, зарегистрированых в датчиках.
 
