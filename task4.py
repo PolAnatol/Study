@@ -16,7 +16,7 @@ if __name__ == '__main__':
     dt=Sc*dx/c
 
     # Время расчета в отсчетах
-    maxTime = 600
+    maxTime = 1000
 
     # Размер области моделирования в отсчетах
     maxSize = 400
@@ -24,32 +24,32 @@ if __name__ == '__main__':
     # Первый слой
     d1=0.15
     eps1=2.4
-    layer1_start = int(1 / dx)
+    layer1_start = 100
     layer1_end = layer1_start + int(d1 / dx)
 
-    # Первый слой
+    # Второй слой
     d2=0.4
     eps2=4.4
     layer2_start = layer1_end
     layer2_end = layer2_start + int(d2 / dx)
 
-    # Первый слой
+    # Третий слой
     d3=0.06
     eps3=6
     layer3_start = layer2_end 
     layer3_end = layer3_start + int(d3 / dx)
 
-    # Первый слой\
+    # Четвертый слой
     eps4=5.2
     layer4_start = layer3_end
-    layer4_end = layer4_start + int(maxSize-layer4_start)
+    
 
     # Датчики для регистрации поля
     probesPos = [25,75]
     probes = [tools.Probe(pos, maxTime) for pos in probesPos]
 
-    # Левая граница TFSF
-    tfsf_left = 50
+    # Источник
+    sourcePos = 50
     eps=np.ones(maxSize)
     eps = np.ones(maxSize)
     eps[layer1_start:] = eps1
@@ -75,7 +75,7 @@ if __name__ == '__main__':
 
     display.activate()
     display.drawProbes(probesPos)
-    display.drawSources([tfsf_left])
+    display.drawSources([sourcePos])
     display.drawBoundary(layer1_start)
     display.drawBoundary(layer2_start)
     display.drawBoundary(layer3_start)
@@ -90,23 +90,26 @@ if __name__ == '__main__':
     
 
     for t in range(maxTime):
+        
+        # Граничные условия для поля H
+        
         # Расчет компоненты поля H
+       # Hy[:-1] = Hy[:-1] + (Ez_shift - Ez[:-1]) * Sc / (W0 * mu)
         Hy = Hy + (Ez[1:] - Ez[:-1]) * Sc / (W0 * mu)
 
         # Источник возбуждения с использованием метода
         # Total Field / Scattered Field
-        Hy[tfsf_left - 1] -= (Sc / (W0 * mu[tfsf_left - 1])) * np.exp(-((t - d_g - tfsf_left)/w_g) ** 2)
+        Hy[sourcePos - 1] -= (Sc / (W0 * mu[sourcePos - 1])) * np.exp(-((t - d_g - sourcePos)/w_g) ** 2)
         # Граничные условия для поля E
         Ez[0] = Ez[1]
-        Ez[-1] = Ez[-2]
-
+        oldboundary = Ez[-2]
         # Расчет компоненты поля E
         Hy_shift = Hy[:-1]
         Ez[1:-1] = Ez[1:-1] + (Hy[1:] - Hy_shift) * Sc * W0 / eps[1:-1]
-
-        # Источник возбуждения с использованием метода
+        Ez[-1] = oldboundary + (Sc - np.sqrt(eps[-1])) / (Sc + np.sqrt(eps[-1])) * (Ez[-2] - Ez[-1])
+  # Источник возбуждения с использованием метода
         # Total Field / Scattered Field
-        Ez[tfsf_left] += Sc / (np.sqrt(eps[tfsf_left] * mu[tfsf_left])) *np.exp(-(((t + 0.5) - (tfsf_left - 0.5) - d_g) / w_g) ** 2) 
+        Ez[sourcePos] += Sc / (np.sqrt(eps[sourcePos] * mu[sourcePos])) *np.exp(-(((t + 0.5) - (sourcePos - 0.5) - d_g) / w_g) ** 2) 
        
 
         # Регистрация поля в датчиках
@@ -120,7 +123,7 @@ if __name__ == '__main__':
  # Размера БПФ
     size = 4096
     FallField = np.zeros(maxTime)
-    FallField[0:150] = probes[1].E[0:150] 
+    FallField[0:100] = probes[1].E[0:100] 
  # Нахождение БПФ падающего поля
     FallSpectr = abs(fft.fft(FallField, size))
     FallSpectr = fft.fftshift(FallSpectr)
@@ -143,7 +146,7 @@ if __name__ == '__main__':
     plt.figure()
     plt.plot(f * 1e-9, ScatteredSpectr / FallSpectr)
     plt.xlim(0, 2e9 * 1e-9)
-    plt.ylim(0, 0.4)
+    plt.ylim(0, 0.5)
     plt.grid() 
     plt.xlabel('f, ГГц')
     plt.ylabel('|Г|')
