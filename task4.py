@@ -19,7 +19,7 @@ if __name__ == '__main__':
     maxTime = 1000
 
     # Размер области моделирования в отсчетах
-    maxSize = 400
+    maxSize = 300
 
     # Первый слой
     d1=0.15
@@ -71,15 +71,15 @@ if __name__ == '__main__':
     # распределения поля в пространстве
     display = tools.AnimateFieldDisplay(maxSize,
                                         display_ymin, display_ymax,
-                                        display_ylabel,dx)
+                                        display_ylabel,dt,dx)
 
-    display.activate()
-    display.drawProbes(probesPos)
-    display.drawSources([sourcePos])
-    display.drawBoundary(layer1_start)
-    display.drawBoundary(layer2_start)
-    display.drawBoundary(layer3_start)
-    display.drawBoundary(layer4_start)
+    display.activate(dx)
+    display.drawProbes(probesPos,dx)
+    display.drawSources([sourcePos],dx)
+    display.drawBoundary(layer1_start,dx)
+    display.drawBoundary(layer2_start,dx)
+    display.drawBoundary(layer3_start,dx)
+    display.drawBoundary(layer4_start,dx)
 
       # Параметры гауссова импульса
     A0 = 1 
@@ -87,7 +87,6 @@ if __name__ == '__main__':
     Fm = 2e9*dt
     w_g = np.sqrt(np.log(Am)) / (np.pi * Fm)
     d_g = w_g * np.sqrt(np.log(A0))
-    
 
     for t in range(maxTime):
         
@@ -150,4 +149,4 @@ if __name__ == '__main__':
     plt.grid() 
     plt.xlabel('f, ГГц')
     plt.ylabel('|Г|')
-    plt.show() 
+    plt.show()
