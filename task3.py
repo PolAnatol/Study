@@ -106,22 +106,22 @@ if __name__ == '__main__':
     display.stop()
 
     # Отображение сигнала, сохраненного в датчиках
-    tools.showProbeSignals(probes, -1.1, 1.1)
-    t=np.arange(0, len(probes[0].E))*dt
+    tools.showProbeSignals(probes, -1.1, 1.1, dt)
+    t=np.arange(0, len(probes[0].E))*dt*10e9
     df = 1.0 / (maxTime * dt)
     gauss=probe.E
     spectrum = np.abs(fft(gauss))
     spectrum = fftshift(spectrum)
     freq = np.arange(-maxTime / 2 * df, maxTime / 2 * df, df)
     # Отображение спектра
-plt.figure
-plt.plot(freq, spectrum / np.max(spectrum))
-plt.grid()
-plt.xlabel('Частота, Гц')
-plt.ylabel('|S| / |Smax|')
-plt.xlim(0, 5e9)
+    plt.figure 
+    plt.plot(freq, spectrum / np.max(spectrum))
+    plt.grid()
+    plt.xlabel('Частота, Гц')
+    plt.ylabel('|S| / |Smax|')
+    plt.xlim(0, 5e9)
 
-plt.subplots_adjust(wspace=0.4)
-plt.show()
+    plt.subplots_adjust(wspace=0.4)
+    plt.show()
     
  
