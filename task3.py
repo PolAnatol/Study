@@ -1,4 +1,5 @@
 
+
 import numpy as np
 from numpy.fft import fft, fftshift
 import matplotlib.pyplot as plt
@@ -36,6 +37,8 @@ if __name__ == '__main__':
 
     # Датчики для регистрации поля
     probesPos = [100]
+   
+    
     probes = [tools.Probe(pos, maxTime) for pos in probesPos]
 
     Ez = np.zeros(maxSize)
@@ -54,11 +57,11 @@ if __name__ == '__main__':
     # распределения поля в пространстве
     display = tools.AnimateFieldDisplay(maxSize,
                                         display_ymin, display_ymax,
-                                        display_ylabel,dt)
+                                        display_ylabel,dt,dx)
 
-    display.activate()
-    display.drawProbes(probesPos)
-    display.drawSources([sourcePos])
+    display.activate(dx)
+    display.drawProbes(probesPos,dx)
+    display.drawSources([sourcePos],dx)
 
 
     # Параметры гауссова импульса
@@ -107,14 +110,14 @@ if __name__ == '__main__':
 
     # Отображение сигнала, сохраненного в датчиках
     tools.showProbeSignals(probes, -1.1, 1.1, dt)
-    t=np.arange(0, len(probes[0].E))*dt*10e9
+    t=np.arange(0, len(probes[0].E))*dt*1e9
     df = 1.0 / (maxTime * dt)
     gauss=probe.E
     spectrum = np.abs(fft(gauss))
     spectrum = fftshift(spectrum)
     freq = np.arange(-maxTime / 2 * df, maxTime / 2 * df, df)
     # Отображение спектра
-    plt.figure 
+    plt.figure
     plt.plot(freq, spectrum / np.max(spectrum))
     plt.grid()
     plt.xlabel('Частота, Гц')
@@ -123,5 +126,5 @@ if __name__ == '__main__':
 
     plt.subplots_adjust(wspace=0.4)
     plt.show()
-    
+   
  
