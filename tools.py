@@ -132,7 +132,7 @@ class AnimateFieldDisplay:
         self._fig.canvas.flush_events()
 
 
-def showProbeSignals(probes: List[Probe], minYSize: float, maxYSize: float):
+def showProbeSignals(probes: List[Probe], minYSize: float, maxYSize: float, dt:float):
     '''
     Показать графики сигналов, зарегистрированых в датчиках.
 
@@ -141,14 +141,13 @@ def showProbeSignals(probes: List[Probe], minYSize: float, maxYSize: float):
     '''
     # Создание окна с графиков
     fig, ax = pylab.subplots()
-    dt=1.666666666e-12
     # Настройка внешнего вида графиков
-    ax.set_xlim(0, len(probes[0].E)*dt)
+    ax.set_xlim(0, len(probes[0].E)*dt*1e9)
     ax.set_ylim(minYSize, maxYSize)
-    ax.set_xlabel('t, отсчет')
+    ax.set_xlabel('t, нс')
     ax.set_ylabel('Ez, В/м')
     ax.grid()
-    t=numpy.arange(0, len(probes[0].E))*dt
+    t=numpy.arange(0, len(probes[0].E))*dt*1e9
     # Вывод сигналов в окно
     for probe in probes:
         ax.plot(t,probe.E)
