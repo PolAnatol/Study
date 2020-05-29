@@ -24,7 +24,7 @@ if __name__ == '__main__':
     # Первый слой
     d1=0.15
     eps1=2.4
-    layer1_start = 100
+    layer1_start = 150
     layer1_end = layer1_start + int(d1 / dx)
 
     # Второй слой
@@ -122,7 +122,7 @@ if __name__ == '__main__':
  # Размера БПФ
     size = 4096
     FallField = np.zeros(maxTime)
-    FallField[0:100] = probes[1].E[0:100] 
+    FallField[0:150] = probes[1].E[0:150] 
  # Нахождение БПФ падающего поля
     FallSpectr = abs(fft.fft(FallField, size))
     FallSpectr = fft.fftshift(FallSpectr)
